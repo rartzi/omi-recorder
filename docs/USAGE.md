@@ -8,14 +8,13 @@ This guide explains how to use the Omi Audio Recorder scripts.
 # 1. Activate virtual environment
 source venv/bin/activate
 
-# 2. Find your Omi device
-uv run src/discover_omi.py
-
-# 3. Update DEVICE_UUID in your chosen script
-
-# 4. Run a recorder
+# 2. Run the continuous recorder (auto-discovers your device)
 uv run src/omi_continuous_recorder.py
+
+# That's it! No configuration needed.
 ```
+
+**Note:** All recorders now support auto-discovery. No need to manually find or edit device UUIDs.
 
 ## Available Scripts
 
@@ -224,9 +223,9 @@ Play recordings:
 
 ---
 
-## Device Discovery
+## Device Discovery (Optional)
 
-**Purpose:** Find your Omi device's Bluetooth UUID.
+**Purpose:** Manually find your Omi device's Bluetooth UUID (useful for manual recording or troubleshooting).
 
 ### Usage
 
@@ -252,15 +251,20 @@ Found Omi device(s):
 
   Name: Omi
   UUID: 93826AE8-AE8C-2AE4-D717-0978E4817739
+  Signal: -50 dBm
 
 ======================================================================
 Next Steps
 ======================================================================
 
-1. Copy the UUID above
-2. Edit src/omi_recorder.py
-3. Set DEVICE_UUID = "YOUR-UUID-HERE"
+1. Run the recorder (auto-discovery enabled):
+   uv run src/omi_continuous_recorder.py
+
+2. (Optional) Pass UUID manually:
+   uv run src/omi_continuous_recorder.py 93826AE8-AE8C-2AE4-D717-0978E4817739
 ```
+
+**Note:** You don't need to run discovery unless you want to manually specify a device or if auto-discovery fails.
 
 ---
 

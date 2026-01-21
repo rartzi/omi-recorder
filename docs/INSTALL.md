@@ -38,11 +38,10 @@ source venv/bin/activate
 # 5. Install Python dependencies
 pip install bleak
 
-# 6. Find your Omi device UUID
-uv run src/discover_omi.py
+# 6. You're ready! Run the continuous recorder
+uv run src/omi_continuous_recorder.py
 
-# 7. Update DEVICE_UUID in your chosen script
-# Edit line 7 or 13 in the script you want to use
+# Auto-discovery will find your device automatically
 ```
 
 ### Option 2: User Installation
@@ -117,15 +116,24 @@ This installs:
 - `bleak` - Bluetooth Low Energy library
 - `pyobjc-framework-CoreBluetooth` - macOS Bluetooth bindings (auto-installed)
 
-### Step 6: Configure Device UUID
+### Step 6: Start Recording
 
-1. Power on your Omi device
-2. Run discovery:
-   ```bash
-   uv run src/discover_omi.py
-   ```
-3. Copy the UUID shown (e.g., `93826AE8-AE8C-2AE4-D717-0978E4817739`)
-4. Edit your chosen recorder script and update `DEVICE_UUID`
+All recorders support auto-discovery, so no manual UUID configuration is needed!
+
+```bash
+source venv/bin/activate
+uv run src/omi_continuous_recorder.py
+```
+
+**Optional:** If you want to manually discover your device UUID first:
+```bash
+uv run src/discover_omi.py
+```
+
+Then you can optionally pass the UUID to any recorder:
+```bash
+uv run src/omi_continuous_recorder.py 93826AE8-AE8C-2AE4-D717-0978E4817739
+```
 
 ---
 

@@ -141,13 +141,14 @@ omi-recorder/
 
 ## Configuration
 
-Edit these values in `src/omi_continuous_recorder.py` to customize behavior:
+**Device Discovery:** Automatic! The continuous recorder will auto-discover your Omi device via BLE. No need to hardcode UUIDs.
+
+**Optional: Customize voice detection** by editing these constants in `src/omi_continuous_recorder.py`:
 
 ```python
-DEVICE_UUID = "YOUR-UUID-HERE"  # Your Omi's Bluetooth UUID
-SILENCE_THRESHOLD = 500         # Voice detection sensitivity
-SILENCE_DURATION = 3.0          # Seconds of silence before saving
-MIN_RECORDING_DURATION = 1.0    # Minimum recording length to save
+SILENCE_THRESHOLD = 500         # Voice detection sensitivity (lower = more sensitive)
+SILENCE_DURATION = 3.0          # Seconds of silence before auto-saving
+MIN_RECORDING_DURATION = 1.0    # Minimum recording length to save (ignores very short clips)
 ```
 
 ## Technical Specifications

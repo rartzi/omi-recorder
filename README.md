@@ -233,6 +233,18 @@ brew install opus
 
 See [docs/USAGE.md](docs/USAGE.md#troubleshooting) for more solutions.
 
+## Issues and Feedback
+
+Found a bug or have a feature request? Please open an issue:
+
+[https://github.com/rartzi/omi-recorder/issues](https://github.com/rartzi/omi-recorder/issues)
+
+When reporting issues, please include:
+- Your macOS version
+- Python version (`python3 --version`)
+- Steps to reproduce the problem
+- Any error messages you see
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

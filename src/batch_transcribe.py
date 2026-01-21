@@ -24,6 +24,21 @@ import argparse
 from pathlib import Path
 from transcribe import batch_transcribe as transcribe_batch
 
+# Default values - hardcoded defaults that always work
+DEFAULT_MODEL = "base"
+DEFAULT_RECORDINGS_DIR = "omi_recordings"
+DEFAULT_TRANSCRIPTS_DIR = "omi_recordings"
+
+# Optionally load from config (failure uses defaults above)
+try:
+    sys.path.insert(0, str(Path(__file__).parent))
+    import config
+    DEFAULT_MODEL = config.get('transcription', 'model', DEFAULT_MODEL)
+    DEFAULT_RECORDINGS_DIR = config.get('directory', 'recordings_dir', DEFAULT_RECORDINGS_DIR)
+    DEFAULT_TRANSCRIPTS_DIR = config.get('directory', 'transcripts_dir', DEFAULT_TRANSCRIPTS_DIR)
+except Exception:
+    pass  # Use defaults - config loading is optional
+
 def main():
     """Main entry point for batch transcription."""
     parser = argparse.ArgumentParser(
@@ -32,15 +47,21 @@ def main():
 
     parser.add_argument(
         "--dir",
-        default="omi_recordings",
-        help="Directory containing WAV files (default: omi_recordings)"
+        default=DEFAULT_RECORDINGS_DIR,
+        help=f"Directory containing WAV files (default: {DEFAULT_RECORDINGS_DIR})"
+    )
+
+    parser.add_argument(
+        "--transcripts-dir",
+        default=DEFAULT_TRANSCRIPTS_DIR,
+        help=f"Directory for transcript files (default: {DEFAULT_TRANSCRIPTS_DIR})"
     )
 
     parser.add_argument(
         "--model",
-        default="base",
+        default=DEFAULT_MODEL,
         choices=["tiny", "base", "small", "medium", "large"],
-        help="Whisper model size (default: base)"
+        help=f"Whisper model size (default: {DEFAULT_MODEL})"
     )
 
     parser.add_argument(
@@ -55,7 +76,8 @@ def main():
     print("\n" + "=" * 70)
     print("Omi Audio Recorder - Batch Transcription")
     print("=" * 70)
-    print(f"\nDirectory: {args.dir}")
+    print(f"\nRecordings: {args.dir}")
+    print(f"Transcripts: {args.transcripts_dir}")
     print(f"Model: Whisper {args.model}")
     if args.force:
         print("Mode: Force re-transcription of all files")
@@ -79,7 +101,12 @@ def main():
 
     try:
         # Run batch transcription
-        stats = transcribe_batch(args.dir, model=args.model, force=args.force)
+        stats = transcribe_batch(
+            args.dir,
+            model=args.model,
+            force=args.force,
+            transcripts_dir=args.transcripts_dir
+        )
 
         # Print summary
         print(f"\n{'='*70}")

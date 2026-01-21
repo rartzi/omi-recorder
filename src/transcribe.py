@@ -253,17 +253,18 @@ def generate_markdown(wav_path: str, transcription_text: str) -> str:
     return markdown
 
 
-def save_markdown(wav_path: str, markdown_content: str) -> Path:
+def save_markdown(wav_path: str, markdown_content: str, transcripts_dir: str = None) -> Path:
     """
-    Save markdown file alongside WAV file.
+    Save markdown file to specified directory or alongside WAV file.
 
     Example:
         Input:  omi_auto_20260120_143022.wav
-        Output: omi_auto_20260120_143022.md
+        Output: omi_auto_20260120_143022.md (in transcripts_dir if specified)
 
     Args:
         wav_path: Path to WAV file
         markdown_content: Markdown formatted string
+        transcripts_dir: Directory to save transcripts (if None, saves alongside WAV)
 
     Returns:
         Path to saved markdown file
@@ -272,7 +273,13 @@ def save_markdown(wav_path: str, markdown_content: str) -> Path:
         IOError: If file write fails
     """
     wav_path = Path(wav_path)
-    md_path = wav_path.with_suffix('.md')
+
+    if transcripts_dir:
+        transcripts_path = Path(transcripts_dir)
+        transcripts_path.mkdir(parents=True, exist_ok=True)
+        md_path = transcripts_path / wav_path.with_suffix('.md').name
+    else:
+        md_path = wav_path.with_suffix('.md')
 
     try:
         with open(md_path, 'w', encoding='utf-8') as f:
@@ -282,15 +289,16 @@ def save_markdown(wav_path: str, markdown_content: str) -> Path:
         raise IOError(f"Failed to save markdown file: {md_path}") from e
 
 
-def should_transcribe(wav_path: str, force: bool = False) -> bool:
+def should_transcribe(wav_path: str, force: bool = False, transcripts_dir: str = None) -> bool:
     """
     Determine if a WAV file should be transcribed.
 
-    Checks if corresponding .md file already exists.
+    Checks if corresponding .md file already exists in transcripts_dir or alongside WAV.
 
     Args:
         wav_path: Path to WAV file
         force: If True, always return True (force re-transcription)
+        transcripts_dir: Directory where transcripts are saved
 
     Returns:
         True if file should be transcribed, False otherwise
@@ -299,12 +307,25 @@ def should_transcribe(wav_path: str, force: bool = False) -> bool:
         return True
 
     wav_path = Path(wav_path)
-    md_path = wav_path.with_suffix('.md')
 
+    # Check transcripts_dir first if specified
+    if transcripts_dir:
+        transcripts_path = Path(transcripts_dir)
+        md_in_transcripts = transcripts_path / wav_path.with_suffix('.md').name
+        if md_in_transcripts.exists():
+            return False
+
+    # Also check alongside WAV file
+    md_path = wav_path.with_suffix('.md')
     return not md_path.exists()
 
 
-def transcribe_file(wav_path: str, model: str = "base", force: bool = False) -> Tuple[bool, Optional[str]]:
+def transcribe_file(
+    wav_path: str,
+    model: str = "base",
+    force: bool = False,
+    transcripts_dir: str = None
+) -> Tuple[bool, Optional[str]]:
     """
     Transcribe a single WAV file and save markdown.
 
@@ -312,6 +333,7 @@ def transcribe_file(wav_path: str, model: str = "base", force: bool = False) -> 
         wav_path: Path to WAV file
         model: Whisper model to use (default: 'base')
         force: If True, re-transcribe even if .md exists
+        transcripts_dir: Directory to save transcripts (if None, saves alongside WAV)
 
     Returns:
         Tuple of (success: bool, message: Optional[str])
@@ -319,7 +341,7 @@ def transcribe_file(wav_path: str, model: str = "base", force: bool = False) -> 
     wav_path = Path(wav_path)
 
     # Check if should transcribe
-    if not should_transcribe(str(wav_path), force):
+    if not should_transcribe(str(wav_path), force, transcripts_dir):
         return True, f"Already transcribed: {wav_path.name}"
 
     try:
@@ -330,7 +352,7 @@ def transcribe_file(wav_path: str, model: str = "base", force: bool = False) -> 
         markdown = generate_markdown(str(wav_path), transcription)
 
         # Save markdown
-        md_path = save_markdown(str(wav_path), markdown)
+        md_path = save_markdown(str(wav_path), markdown, transcripts_dir)
 
         return True, f"Transcribed: {wav_path.name} → {md_path.name}"
 
@@ -341,7 +363,8 @@ def transcribe_file(wav_path: str, model: str = "base", force: bool = False) -> 
 def batch_transcribe(
     recordings_dir: str = "omi_recordings",
     model: str = "base",
-    force: bool = False
+    force: bool = False,
+    transcripts_dir: str = None
 ) -> Dict[str, int]:
     """
     Batch transcribe all WAV files in a directory.
@@ -352,6 +375,7 @@ def batch_transcribe(
         recordings_dir: Directory containing WAV files (default: 'omi_recordings')
         model: Whisper model to use (default: 'base')
         force: If True, re-transcribe all files even if .md exists
+        transcripts_dir: Directory to save transcripts (if None, saves alongside WAV)
 
     Returns:
         Dict with counts: {'total': int, 'succeeded': int, 'failed': int, 'skipped': int}
@@ -374,7 +398,7 @@ def batch_transcribe(
     for i, wav_file in enumerate(wav_files, 1):
         print(f"[{i}/{len(wav_files)}] Processing: {wav_file.name}")
 
-        success, message = transcribe_file(str(wav_file), model, force)
+        success, message = transcribe_file(str(wav_file), model, force, transcripts_dir)
 
         if success:
             if "Already transcribed" in message:

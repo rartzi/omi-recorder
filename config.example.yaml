@@ -1,0 +1,23 @@
+# Omi Audio Recorder Configuration
+# Copy this file to config.yaml and customize as needed.
+# All values shown are the defaults - you only need to include
+# settings you want to change.
+
+recording:
+  # Voice activity detection settings
+  silence_threshold: 500    # RMS level (0-32767), lower = more sensitive
+  silence_duration: 3.0     # Seconds of silence before auto-saving
+  min_recording_duration: 1.0  # Discard recordings shorter than this (seconds)
+  sample_rate: 16000        # Audio sample rate in Hz (don't change unless necessary)
+
+transcription:
+  model: base               # Whisper model: tiny, base, small, medium, large
+  language: ""              # Language code (e.g., "en", "he") or empty for auto-detect
+  enable_rtl_support: true  # Format right-to-left languages (Hebrew, Arabic) properly
+
+directory:
+  recordings_dir: omi_recordings    # Where WAV files are saved
+  transcripts_dir: omi_recordings   # Where markdown transcripts are saved
+
+device:
+  discovery_timeout: 10.0   # BLE scan timeout in seconds when auto-discovering device

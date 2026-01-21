@@ -49,6 +49,7 @@ htmlcov/
 # Project specific
 omi_recordings/
 .claude/
+config.yaml
 
 # Environment & secrets
 .env

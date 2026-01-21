@@ -19,10 +19,24 @@ DEVICE_UUID = sys.argv[1] if len(sys.argv) > 1 else None
 AUDIO_CHAR_UUID = "19B10001-E8F2-537E-4F6C-D104768A1214"
 SAMPLE_RATE = 16000
 
-# Voice detection thresholds (adjust these if needed)
-SILENCE_THRESHOLD = 500      # Audio RMS below this = silence (lowered for less sensitivity)
+# Voice detection thresholds - hardcoded defaults that always work
+SILENCE_THRESHOLD = 500      # Audio RMS below this = silence
 SILENCE_DURATION = 3.0       # Seconds of silence before saving and starting new session
 MIN_RECORDING_DURATION = 1.0 # Minimum seconds to save (ignore very short clips)
+RECORDINGS_DIR = "omi_recordings"
+DEVICE_DISCOVERY_TIMEOUT = 10.0
+
+# Optionally load from config (failure uses defaults above)
+try:
+    sys.path.insert(0, str(Path(__file__).parent))
+    import config
+    SILENCE_THRESHOLD = config.get('recording', 'silence_threshold', SILENCE_THRESHOLD)
+    SILENCE_DURATION = config.get('recording', 'silence_duration', SILENCE_DURATION)
+    MIN_RECORDING_DURATION = config.get('recording', 'min_recording_duration', MIN_RECORDING_DURATION)
+    RECORDINGS_DIR = config.get('directory', 'recordings_dir', RECORDINGS_DIR)
+    DEVICE_DISCOVERY_TIMEOUT = config.get('device', 'discovery_timeout', DEVICE_DISCOVERY_TIMEOUT)
+except Exception:
+    pass  # Use defaults - config loading is optional
 
 print("=" * 70)
 print("Omi Continuous Recorder")
@@ -35,7 +49,7 @@ if not DEVICE_UUID:
     from bleak import BleakScanner
 
     async def discover_device():
-        devices = await BleakScanner.discover(timeout=10.0)
+        devices = await BleakScanner.discover(timeout=DEVICE_DISCOVERY_TIMEOUT)
         omi_devices = [d for d in devices if d.name and "omi" in d.name.lower()]
         if not omi_devices:
             print("✗ No Omi devices found")
@@ -97,7 +111,7 @@ class AutoRecorder:
         self.is_recording = False
         self.decoded_pcm = []
         self.recording_count = 0
-        self.output_dir = Path("omi_recordings")
+        self.output_dir = Path(RECORDINGS_DIR)
         self.output_dir.mkdir(exist_ok=True)
         self.running = True
 

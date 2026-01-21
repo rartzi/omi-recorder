@@ -25,16 +25,28 @@ pip install bleak
 ```bash
 source venv/bin/activate
 
-# 1. Discover Omi device UUID
+# 1. Auto-discovery mode (Recommended)
+# Continuous recorder will auto-discover your Omi device:
+uv run src/omi_continuous_recorder.py
+
+# 2. Manual device UUID mode (Optional)
+# First discover your device:
 uv run src/discover_omi.py
 
-# 2. Edit DEVICE_UUID in the script you want to use (line 7 or 13)
+# Then run with the UUID:
+uv run src/omi_continuous_recorder.py B6B3A95D-FAC4-E984-0E50-8924A6F36529
 
-# 3. Recording options:
+# 3. Other recording options:
 uv run src/omi_recorder.py              # Basic: Ctrl+C to stop
 uv run src/omi_recorder_enhanced.py     # Interactive: r/s/q controls
 uv run src/omi_continuous_recorder.py   # Voice-activated: auto-saves on silence
 ```
+
+**Key improvements:**
+- No need to edit DEVICE_UUID in scripts anymore
+- Auto-discovery scans for Omi devices at runtime
+- Optional UUID can be passed as command-line argument
+- All scripts in `src/` directory using `uv run`
 
 Note: `setup_complete.sh` only copies `discover_omi.py` and `omi_recorder.py` to `~/omi-recorder/`. Other scripts must be run from the repository.
 
@@ -46,10 +58,18 @@ Note: `setup_complete.sh` only copies `discover_omi.py` and `omi_recorder.py` to
 
 **omi_recorder_enhanced.py**: Adds `RecorderState` enum (IDLE/RECORDING/STOPPED), threaded keyboard input, and multi-file session support.
 
-**omi_continuous_recorder.py**: Voice-activated continuous recording. Monitors audio stream, starts recording when speech detected, auto-saves to separate WAV files after configurable silence duration (default 3s). Ideal for capturing multiple ideas/notes in one session.
+**src/omi_continuous_recorder.py**: Voice-activated continuous recording with auto-discovery. Features:
+- Auto-discovers Omi devices via BLE scan if no UUID provided
+- Accepts optional UUID as command-line argument: `python omi_continuous_recorder.py [device_uuid]`
+- Monitors audio stream, starts recording when speech detected
+- Auto-saves to separate WAV files after configurable silence duration (default 3s)
+- Ideal for capturing multiple ideas/notes in one session
+- Real-time visual feedback showing recording progress and audio levels
 
-**Key constants** (in recorder scripts):
-- `DEVICE_UUID`: Your Omi's Bluetooth UUID (from discover_omi.py)
+**Key constants** (configurable in src/omi_continuous_recorder.py):
+- `SILENCE_THRESHOLD`: 500 (RMS level below this = silence)
+- `SILENCE_DURATION`: 3.0 seconds (silence before auto-save)
+- `MIN_RECORDING_DURATION`: 1.0 second (minimum recording to save)
 - `AUDIO_CHAR_UUID`: `19B10001-E8F2-537E-4F6C-D104768A1214`
 - `SAMPLE_RATE`: 16000 Hz
 

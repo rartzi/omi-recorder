@@ -151,18 +151,32 @@ main()
 ```
 
 ### src/omi_continuous_recorder.py
+
+**Features:**
+- Auto-discovery of Omi devices (no hardcoded UUID needed)
+- Optional command-line UUID argument: `python omi_continuous_recorder.py [device_uuid]`
+- Dynamic device selection if multiple Omi devices found
+- Real-time visual feedback with progress bar
+
 ```
 main()
+  ├── Check command-line args for UUID
+  │     └── if not provided: auto-discover
+  │           ├── BleakScanner.discover()
+  │           ├── Filter devices by "omi" name
+  │           ├── If single device: connect to it
+  │           └── If multiple devices: prompt user to select
+  ├── Load libopus via ctypes
+  ├── Create Opus decoder
   └── AutoRecorder.run()
-        ├── Load libopus via ctypes
-        ├── Create Opus decoder
-        ├── BleakClient.connect()
+        ├── BleakClient.connect(DEVICE_UUID)
         ├── start_notify(AUDIO_CHAR_UUID, handle_audio)
         │     └── handle_audio:
         │           ├── Decode Opus to PCM
         │           ├── Calculate RMS level
         │           ├── Detect speech/silence
         │           ├── Manage recording state
+        │           ├── Show real-time progress bar
         │           └── Auto-save on silence timeout
         └── Wait for Ctrl+C
               └── Save any remaining audio

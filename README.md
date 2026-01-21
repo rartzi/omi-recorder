@@ -10,10 +10,12 @@ A macOS application for recording audio from Omi wearable devices via Bluetooth 
 
 ## Features
 
+- **Auto-discovery mode** - Automatically finds your Omi device, no configuration needed
 - **Real-time audio capture** from Omi wearable devices
 - **Voice-activated recording** with automatic session segmentation
 - **Multiple recording modes** (continuous, manual, interactive)
 - **Opus to WAV conversion** with high-quality decoding
+- **Real-time visual feedback** showing recording progress and audio levels
 - **Simple setup** with minimal dependencies
 
 ## Quick Start
@@ -24,12 +26,12 @@ brew install opus
 python3 -m venv venv && source venv/bin/activate
 pip install bleak
 
-# Find your device
-uv run src/discover_omi.py
-
-# Update DEVICE_UUID in your chosen script, then run:
+# Run continuous recorder with auto-discovery
+# (No need to manually find or edit device UUID!)
 uv run src/omi_continuous_recorder.py
 ```
+
+✨ **New Feature:** Auto-discovery mode automatically finds your Omi device. No hardcoding needed!
 
 ## Installation
 
@@ -67,16 +69,24 @@ uv run src/discover_omi.py
 
 ### Continuous Recorder (Recommended)
 
-Automatically records and saves separate files based on voice activity:
+Automatically discovers your Omi device and records with voice activity detection:
 
 ```bash
+# Auto-discovery mode (recommended)
 uv run src/omi_continuous_recorder.py
+
+# Optional: Specify device UUID manually
+uv run src/omi_continuous_recorder.py B6B3A95D-FAC4-E984-0E50-8924A6F36529
 ```
 
+**Features:**
+- Auto-discovers Omi devices (scans for 10 seconds)
+- If multiple devices found, prompts you to select one
 - Starts recording when speech is detected
 - Saves to a new file after 3 seconds of silence
 - Creates separate files for each speech segment
-- Press `Ctrl+C` to stop
+- Real-time progress bar showing recording status
+- Press `Ctrl+C` to stop gracefully
 
 ### Basic Recorder
 

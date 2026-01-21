@@ -84,13 +84,26 @@ Quitting...
 
 ### Configuration
 
-Edit these values at the top of `src/omi_continuous_recorder.py`:
+Create a `config.yaml` file in the project root to customize settings:
 
-```python
-SILENCE_THRESHOLD = 500   # Lower = more sensitive to quiet speech
-SILENCE_DURATION = 3.0    # Seconds of silence before saving
-MIN_RECORDING_DURATION = 1.0  # Ignore recordings shorter than this
+```bash
+cp config.example.yaml config.yaml
 ```
+
+Then edit `config.yaml`:
+
+```yaml
+recording:
+  silence_threshold: 500   # Lower = more sensitive to quiet speech
+  silence_duration: 3.0    # Seconds of silence before saving
+  min_recording_duration: 1.0  # Ignore recordings shorter than this
+
+directory:
+  recordings_dir: omi_recordings    # Where WAV files are saved
+  transcripts_dir: omi_recordings   # Where transcripts are saved
+```
+
+All settings are optional - the defaults work out of the box.
 
 ### Output Files
 
@@ -311,9 +324,14 @@ uv run src/batch_transcribe.py --force
 # Use a different Whisper model size
 uv run src/batch_transcribe.py --model small
 
-# Transcribe a custom directory
+# Transcribe from a custom directory
 uv run src/batch_transcribe.py --dir /path/to/recordings
+
+# Save transcripts to a separate directory
+uv run src/batch_transcribe.py --transcripts-dir /path/to/transcripts
 ```
+
+**Tip:** Set `transcripts_dir` in `config.yaml` to always save transcripts to a separate folder.
 
 **Supported Models:**
 - `tiny` (39M params, ~75MB) - Fastest, lowest quality
@@ -467,14 +485,16 @@ brew install opus
 
 ### Recordings are splitting too often
 
-Increase `SILENCE_DURATION` in `src/omi_continuous_recorder.py`:
-```python
-SILENCE_DURATION = 5.0  # Wait 5 seconds instead of 3
+Increase `silence_duration` in `config.yaml`:
+```yaml
+recording:
+  silence_duration: 5.0  # Wait 5 seconds instead of 3
 ```
 
 ### Recordings not triggering on quiet speech
 
-Lower `SILENCE_THRESHOLD` in `src/omi_continuous_recorder.py`:
-```python
-SILENCE_THRESHOLD = 300  # More sensitive to quiet audio
+Lower `silence_threshold` in `config.yaml`:
+```yaml
+recording:
+  silence_threshold: 300  # More sensitive to quiet audio
 ```

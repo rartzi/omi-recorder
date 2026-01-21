@@ -128,12 +128,14 @@ See [docs/USAGE.md](docs/USAGE.md) for comprehensive usage guide.
 ```
 omi-recorder/
 ├── src/
+│   ├── config.py                  # Configuration loader
 │   ├── discover_omi.py            # Device discovery utility
 │   ├── omi_recorder.py            # Basic recorder
 │   ├── omi_recorder_enhanced.py   # Interactive recorder
 │   ├── omi_continuous_recorder.py # Voice-activated recorder
 │   ├── transcribe.py              # Transcription module
 │   └── batch_transcribe.py        # Batch transcription script
+├── config.example.yaml        # Example configuration file
 ├── setup_complete.sh          # User installation script
 ├── docs/
 │   ├── ARCHITECTURE.md        # Technical documentation
@@ -147,13 +149,37 @@ omi-recorder/
 
 **Device Discovery:** Automatic! The continuous recorder will auto-discover your Omi device via BLE. No need to hardcode UUIDs.
 
-**Optional: Customize voice detection** by editing these constants in `src/omi_continuous_recorder.py`:
+**Optional: Customize settings** by creating a `config.yaml` file in the project root:
 
-```python
-SILENCE_THRESHOLD = 500         # Voice detection sensitivity (lower = more sensitive)
-SILENCE_DURATION = 3.0          # Seconds of silence before auto-saving
-MIN_RECORDING_DURATION = 1.0    # Minimum recording length to save (ignores very short clips)
+```bash
+# Copy the example config
+cp config.example.yaml config.yaml
+
+# Edit to customize
+nano config.yaml
 ```
+
+**Available settings:**
+
+```yaml
+recording:
+  silence_threshold: 500    # Voice detection sensitivity (lower = more sensitive)
+  silence_duration: 3.0     # Seconds of silence before auto-saving
+  min_recording_duration: 1.0  # Minimum recording length to save
+
+transcription:
+  model: base               # Whisper model: tiny, base, small, medium, large
+  language: ""              # Language code or empty for auto-detect
+
+directory:
+  recordings_dir: omi_recordings    # Where WAV files are saved
+  transcripts_dir: omi_recordings   # Where markdown transcripts are saved
+
+device:
+  discovery_timeout: 10.0   # BLE scan timeout in seconds
+```
+
+All settings are optional - defaults work out of the box. The config file is gitignored for personal customization.
 
 ## Technical Specifications
 
@@ -179,8 +205,11 @@ uv run src/batch_transcribe.py --force
 # Use a different Whisper model (tiny, small, medium, large)
 uv run src/batch_transcribe.py --model small
 
-# Transcribe a custom directory
+# Transcribe from a custom directory
 uv run src/batch_transcribe.py --dir /path/to/recordings
+
+# Save transcripts to a separate directory
+uv run src/batch_transcribe.py --transcripts-dir /path/to/transcripts
 ```
 
 **Features:**

@@ -10,6 +10,19 @@ DEVICE_UUID = sys.argv[1] if len(sys.argv) > 1 else None
 AUDIO_CHAR_UUID = "19B10001-E8F2-537E-4F6C-D104768A1214"
 SAMPLE_RATE = 16000
 
+# Hardcoded defaults that always work
+RECORDINGS_DIR = "omi_recordings"
+DEVICE_DISCOVERY_TIMEOUT = 10.0
+
+# Optionally load from config (failure uses defaults above)
+try:
+    sys.path.insert(0, str(Path(__file__).parent))
+    import config
+    RECORDINGS_DIR = config.get('directory', 'recordings_dir', RECORDINGS_DIR)
+    DEVICE_DISCOVERY_TIMEOUT = config.get('device', 'discovery_timeout', DEVICE_DISCOVERY_TIMEOUT)
+except Exception:
+    pass  # Use defaults - config loading is optional
+
 class RecorderState(Enum):
     IDLE = "idle"
     RECORDING = "recording"
@@ -21,7 +34,7 @@ class EnhancedRecorder:
         self.decoded_pcm = []
         self.notification_count = 0
         self.recording_number = 0
-        self.output_dir = Path("omi_recordings")
+        self.output_dir = Path(RECORDINGS_DIR)
         self.output_dir.mkdir(exist_ok=True)
         self.session_timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         self.current_recording_start = None
@@ -265,7 +278,7 @@ def main():
         from bleak import BleakScanner
 
         async def discover_device():
-            devices = await BleakScanner.discover(timeout=10.0)
+            devices = await BleakScanner.discover(timeout=DEVICE_DISCOVERY_TIMEOUT)
             omi_devices = [d for d in devices if d.name and "omi" in d.name.lower()]
             if not omi_devices:
                 print("✗ No Omi devices found")

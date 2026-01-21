@@ -9,8 +9,21 @@ DEVICE_UUID = sys.argv[1] if len(sys.argv) > 1 else None
 AUDIO_CHAR_UUID = "19B10001-E8F2-537E-4F6C-D104768A1214"
 SAMPLE_RATE = 16000
 
+# Hardcoded defaults that always work
+RECORDINGS_DIR = "omi_recordings"
+DEVICE_DISCOVERY_TIMEOUT = 10.0
+
+# Optionally load from config (failure uses defaults above)
+try:
+    sys.path.insert(0, str(Path(__file__).parent))
+    import config
+    RECORDINGS_DIR = config.get('directory', 'recordings_dir', RECORDINGS_DIR)
+    DEVICE_DISCOVERY_TIMEOUT = config.get('device', 'discovery_timeout', DEVICE_DISCOVERY_TIMEOUT)
+except Exception:
+    pass  # Use defaults - config loading is optional
+
 print("=" * 70)
-print("🎤 Omi Audio Recorder")
+print("Omi Audio Recorder")
 print("=" * 70)
 print()
 
@@ -20,7 +33,7 @@ if not DEVICE_UUID:
     from bleak import BleakScanner
 
     async def discover_device():
-        devices = await BleakScanner.discover(timeout=10.0)
+        devices = await BleakScanner.discover(timeout=DEVICE_DISCOVERY_TIMEOUT)
         omi_devices = [d for d in devices if d.name and "omi" in d.name.lower()]
         if not omi_devices:
             print("✗ No Omi devices found")
@@ -78,7 +91,7 @@ if error.value != 0:
     print(f"✗ Failed to create Opus decoder")
     sys.exit(1)
 
-output_dir = Path("omi_recordings")
+output_dir = Path(RECORDINGS_DIR)
 output_dir.mkdir(exist_ok=True)
 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 wav_file = output_dir / f"omi_{timestamp}.wav"

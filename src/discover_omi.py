@@ -1,18 +1,31 @@
 #!/usr/bin/env python3
 """Omi Device Discovery - Finds your Omi device's Bluetooth UUID"""
+import sys
 import asyncio
+from pathlib import Path
 from bleak import BleakScanner
+
+# Hardcoded default that always works
+DEVICE_DISCOVERY_TIMEOUT = 10.0
+
+# Optionally load from config (failure uses default above)
+try:
+    sys.path.insert(0, str(Path(__file__).parent))
+    import config
+    DEVICE_DISCOVERY_TIMEOUT = config.get('device', 'discovery_timeout', DEVICE_DISCOVERY_TIMEOUT)
+except Exception:
+    pass  # Use default - config loading is optional
 
 print("=" * 70)
 print("Omi Device Discovery")
 print("=" * 70)
 print()
 print("Scanning for Bluetooth devices...")
-print("(This takes about 10 seconds)")
+print(f"(This takes about {DEVICE_DISCOVERY_TIMEOUT:.0f} seconds)")
 print()
 
 async def discover():
-    devices = await BleakScanner.discover(timeout=10.0)
+    devices = await BleakScanner.discover(timeout=DEVICE_DISCOVERY_TIMEOUT)
     omi_devices = [d for d in devices if d.name and "omi" in d.name.lower()]
     
     print("=" * 70)

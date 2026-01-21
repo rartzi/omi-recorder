@@ -207,9 +207,125 @@ The `src/omi_recorder_enhanced.py` additionally uses a background thread for key
 - **Opus decode errors**: Silent failures (logged), frame skipped
 - **File write errors**: Exception raised, user notified
 
+## Transcription Pipeline
+
+```
+WAV File
+       │
+       ▼
+┌─────────────────────────────────────────┐
+│  Audio Metadata Extraction              │
+│  - Extract timestamp from filename      │
+│  - Read duration & sample rate          │
+│  - Get file size                        │
+└─────────────────────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────────────┐
+│  Whisper Transcription                  │
+│  - Load model from cache or download    │
+│  - Convert WAV to text                  │
+│  - Supports offline after first run     │
+└─────────────────────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────────────┐
+│  Markdown Generation                    │
+│  - Combine metadata + transcription     │
+│  - Format as markdown                   │
+│  - Add footer and timestamps            │
+└─────────────────────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────────────┐
+│  Output: .md File                       │
+│  Example: omi_auto_20260120_143022.md   │
+│  - Metadata section (YAML-like)         │
+│  - Transcription text                   │
+└─────────────────────────────────────────┘
+```
+
+### Transcription Scripts
+
+**src/transcribe.py** - Core transcription module
+
+```
+Main Functions:
+  transcribe_audio()      - Whisper transcription
+  generate_markdown()     - Create markdown with metadata
+  save_markdown()         - Write .md file
+  batch_transcribe()      - Process all WAV files
+  transcribe_file()       - Single file wrapper
+  get_audio_metadata()    - Extract WAV metadata
+```
+
+**src/batch_transcribe.py** - Standalone CLI script
+
+```
+Features:
+  - CLI argument parsing (--dir, --model, --force)
+  - Directory scanning for WAV files
+  - Progress reporting
+  - Error handling
+  - Summary statistics
+```
+
+### Whisper Model Caching
+
+```
+First Run (with internet):
+  1. User runs: uv run src/batch_transcribe.py
+  2. Script checks ~/.cache/whisper/base.pt
+  3. Model not found, downloads from Hugging Face (~140MB)
+  4. Model cached for future use
+  5. Transcription begins
+
+Subsequent Runs (with or without internet):
+  1. User runs: uv run src/batch_transcribe.py
+  2. Script finds model at ~/.cache/whisper/base.pt
+  3. Loads from cache (offline capable)
+  4. Transcription begins immediately
+```
+
+### Batch Processing Flow
+
+```
+uv run src/batch_transcribe.py [--options]
+       │
+       ├─ Parse arguments
+       │
+       ├─ Scan omi_recordings/ for *.wav files
+       │
+       ├─ For each WAV file:
+       │   ├─ Check if .md exists (skip if exists, unless --force)
+       │   ├─ Transcribe using Whisper
+       │   ├─ Generate markdown with metadata
+       │   ├─ Save .md file
+       │   └─ Update statistics
+       │
+       └─ Print summary report
+```
+
+### Performance Characteristics
+
+| Stage | Time | Model Dependency |
+|-------|------|------------------|
+| Model Load | ~2-5s | First run: download, subsequent: cache |
+| Per Minute Audio | ~5-10s | base model on Apple Silicon |
+| Metadata Extraction | <100ms | None |
+| Markdown Generation | <100ms | None |
+| File I/O | <100ms | None |
+
+**Notes:**
+- Larger models are slower but more accurate
+- Apple Silicon (M1/M2/M3) faster than Intel
+- First run includes model download (~140MB base model)
+- Subsequent runs use cached model (offline capable)
+
 ## Limitations
 
 1. **macOS only**: Uses CoreBluetooth via pyobjc (bleak backend)
 2. **Single device**: One Omi connection at a time
 3. **No offline storage**: Consumer Omi devices don't expose storage service
 4. **Real-time only**: Audio must be captured while connected
+5. **Transcription**: Requires internet for first model download (then offline-capable)

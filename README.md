@@ -16,6 +16,8 @@ A macOS application for recording audio from Omi wearable devices via Bluetooth 
 - **Multiple recording modes** (continuous, manual, interactive)
 - **Opus to WAV conversion** with high-quality decoding
 - **Real-time visual feedback** showing recording progress and audio levels
+- **Automatic transcription** - Batch convert recordings to markdown with Whisper
+- **Offline transcription** - Works without internet once model is cached
 - **Simple setup** with minimal dependencies
 
 ## Quick Start
@@ -129,7 +131,9 @@ omi-recorder/
 │   ├── discover_omi.py            # Device discovery utility
 │   ├── omi_recorder.py            # Basic recorder
 │   ├── omi_recorder_enhanced.py   # Interactive recorder
-│   └── omi_continuous_recorder.py # Voice-activated recorder
+│   ├── omi_continuous_recorder.py # Voice-activated recorder
+│   ├── transcribe.py              # Transcription module
+│   └── batch_transcribe.py        # Batch transcription script
 ├── setup_complete.sh          # User installation script
 ├── docs/
 │   ├── ARCHITECTURE.md        # Technical documentation
@@ -163,15 +167,45 @@ MIN_RECORDING_DURATION = 1.0    # Minimum recording length to save (ignores very
 
 ## Transcription
 
-Recorded files can be transcribed using OpenAI Whisper:
+Automatically transcribe all recordings to markdown files with metadata:
 
 ```bash
-# Install Whisper
-pip install openai-whisper
+# Batch transcribe all new recordings
+uv run src/batch_transcribe.py
 
-# Transcribe recordings
-whisper omi_recordings/*.wav
+# Re-transcribe all files (even if .md exists)
+uv run src/batch_transcribe.py --force
+
+# Use a different Whisper model (tiny, small, medium, large)
+uv run src/batch_transcribe.py --model small
+
+# Transcribe a custom directory
+uv run src/batch_transcribe.py --dir /path/to/recordings
 ```
+
+**Features:**
+- Automatically generates markdown files alongside WAV files
+- Includes audio metadata (duration, file size, sample rate)
+- Whisper base model (~140MB) cached locally for offline use
+- Skips already-transcribed files by default
+- Progress bar during batch processing
+- Works completely offline once model is cached
+
+Each recording generates a markdown file with:
+```markdown
+# Recording: omi_auto_20260120_143022
+
+## Metadata
+- **Recorded:** 2026-01-20 14:30:22
+- **Duration:** 8.5s
+- **File Size:** 265.3 KB
+- ...
+
+## Transcription
+[Transcribed text from Whisper]
+```
+
+See [docs/USAGE.md](docs/USAGE.md#transcription) for complete transcription guide.
 
 ## Troubleshooting
 

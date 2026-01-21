@@ -297,32 +297,149 @@ ffprobe -i omi_recordings/omi_auto_20260120_143022.wav 2>&1 | grep Duration
 
 ## Transcription
 
-After recording, you can transcribe your audio files:
+Automatically transcribe recordings to markdown files with metadata and full transcription text.
 
-### Using OpenAI Whisper (Local)
+### Batch Transcription (Recommended)
 
 ```bash
-# Install Whisper
-pip install openai-whisper
+# Transcribe all new recordings
+uv run src/batch_transcribe.py
 
-# Transcribe a file
-whisper omi_recordings/omi_auto_20260120_143022.wav
+# Re-transcribe all files (ignore existing .md files)
+uv run src/batch_transcribe.py --force
 
-# Transcribe all files
-whisper omi_recordings/*.wav
+# Use a different Whisper model size
+uv run src/batch_transcribe.py --model small
 
-# Output to text files
-whisper omi_recordings/*.wav --output_format txt
+# Transcribe a custom directory
+uv run src/batch_transcribe.py --dir /path/to/recordings
 ```
 
-### Using Whisper API (Cloud)
+**Supported Models:**
+- `tiny` (39M params, ~75MB) - Fastest, lowest quality
+- `base` (74M params, ~140MB) - **Recommended** - Good balance
+- `small` (244M params, ~461MB) - Better accuracy
+- `medium` (769M params, ~1.4GB) - High accuracy
+- `large` (1550M params, ~2.9GB) - Best accuracy
 
-```python
-import openai
+### Batch Transcription Output
 
-audio_file = open("omi_recordings/omi_auto_20260120_143022.wav", "rb")
-transcript = openai.Audio.transcribe("whisper-1", audio_file)
-print(transcript.text)
+For each WAV file, a markdown file is created with metadata and transcription:
+
+```markdown
+# Recording: omi_auto_20260120_143022
+
+## Metadata
+- **Recorded:** 2026-01-20 14:30:22
+- **Duration:** 8.5s
+- **File Size:** 265.3 KB
+- **Sample Rate:** 16,000 Hz
+- **Channels:** Mono
+- **Format:** WAV (PCM 16-bit)
+- **Transcription Model:** Whisper base
+
+## Transcription
+
+[Full transcribed text from Whisper]
+
+---
+*Automatically transcribed using OpenAI Whisper*
+```
+
+### Offline Transcription
+
+The Whisper model is cached locally at `~/.cache/whisper/base.pt` (~140MB):
+
+```bash
+# First run downloads the model
+uv run src/batch_transcribe.py
+# This may take a few minutes on first run
+
+# Subsequent runs use cached model
+# Works completely offline after first download
+uv run src/batch_transcribe.py
+```
+
+### Example Session
+
+```
+$ uv run src/batch_transcribe.py
+
+======================================================================
+Omi Audio Recorder - Batch Transcription
+======================================================================
+
+Directory: omi_recordings
+Model: Whisper base
+Mode: Transcribe new files only (skip if .md exists)
+
+Found 3 WAV file(s)
+
+[1/3] Processing: omi_auto_20260120_143022.wav
+         Loading Whisper base model...
+         Transcribing omi_auto_20260120_143022.wav...
+         Transcribed: omi_auto_20260120_143022.wav → omi_auto_20260120_143022.md
+
+[2/3] Processing: omi_auto_20260120_143035.wav
+         Already transcribed: omi_auto_20260120_143035.wav
+
+[3/3] Processing: omi_auto_20260120_143048.wav
+         Loading Whisper base model...
+         Transcribing omi_auto_20260120_143048.wav...
+         Transcribed: omi_auto_20260120_143048.wav → omi_auto_20260120_143048.md
+
+======================================================================
+Batch Transcription Complete
+======================================================================
+Total:     3
+Succeeded: 2
+Failed:    0
+Skipped:   1
+======================================================================
+```
+
+### Viewing Transcriptions
+
+```bash
+# Open all markdown files
+open omi_recordings/*.md
+
+# View a single transcription
+cat omi_recordings/omi_auto_20260120_143022.md
+
+# Search all transcriptions
+grep -r "important topic" omi_recordings/*.md
+```
+
+### Transcription Troubleshooting
+
+**"Model download failed":**
+- Ensure you have internet on first run
+- Model will be cached for offline use afterward
+- Check `~/.cache/whisper/base.pt` exists
+
+**"Transcription quality is poor":**
+- Ensure audio was clear (speak directly into Omi)
+- Try a larger model: `--model medium` or `--model large`
+- Check that microphone was working during recording
+
+**"Very slow transcription":**
+- Use smaller model: `--model tiny` (faster but less accurate)
+- Larger models require more compute time
+- Apple Silicon (M1/M2) typically faster than Intel
+
+### Advanced: Transcribe Individual Files
+
+```bash
+# Transcribe a single file
+uv run src/transcribe.py omi_recordings/omi_auto_20260120_143022.wav
+
+# Uses Python import:
+from src.transcribe import transcribe_file
+
+wav_file = "omi_recordings/omi_auto_20260120_143022.wav"
+success, message = transcribe_file(wav_file, model="base", force=False)
+print(message)
 ```
 
 ---

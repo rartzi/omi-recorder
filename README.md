@@ -6,6 +6,8 @@ A macOS application for recording audio from Omi wearable devices via Bluetooth 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)](https://www.apple.com/macos/)
 
+![Omi Audio Recorder](assets/hero-image.png)
+
 ## Features
 
 - **Real-time audio capture** from Omi wearable devices

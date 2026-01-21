@@ -4,7 +4,8 @@ import os, sys, glob, ctypes, asyncio, wave, struct
 from datetime import datetime
 from pathlib import Path
 
-DEVICE_UUID = "93826AE8-AE8C-2AE4-D717-0978E4817739"  # CHANGE THIS!
+# Accept device UUID as command line argument or auto-discover
+DEVICE_UUID = sys.argv[1] if len(sys.argv) > 1 else None
 AUDIO_CHAR_UUID = "19B10001-E8F2-537E-4F6C-D104768A1214"
 SAMPLE_RATE = 16000
 
@@ -12,6 +13,38 @@ print("=" * 70)
 print("🎤 Omi Audio Recorder")
 print("=" * 70)
 print()
+
+# Auto-discover device if UUID not provided
+if not DEVICE_UUID:
+    print("Scanning for Omi devices...")
+    from bleak import BleakScanner
+
+    async def discover_device():
+        devices = await BleakScanner.discover(timeout=10.0)
+        omi_devices = [d for d in devices if d.name and "omi" in d.name.lower()]
+        if not omi_devices:
+            print("✗ No Omi devices found")
+            print("Make sure your Omi is powered on and Bluetooth is enabled")
+            sys.exit(1)
+        if len(omi_devices) == 1:
+            print(f"✓ Found Omi device: {omi_devices[0].name}")
+            return omi_devices[0].address
+        else:
+            print(f"✓ Found {len(omi_devices)} Omi device(s):")
+            for i, d in enumerate(omi_devices, 1):
+                print(f"  {i}. {d.name} ({d.address})")
+            choice = input("Select device (number): ").strip()
+            try:
+                idx = int(choice) - 1
+                if 0 <= idx < len(omi_devices):
+                    return omi_devices[idx].address
+            except:
+                pass
+            print("Invalid selection")
+            sys.exit(1)
+
+    DEVICE_UUID = asyncio.run(discover_device())
+    print()
 
 # Load Opus
 opus_path = None

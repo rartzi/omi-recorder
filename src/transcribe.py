@@ -152,6 +152,52 @@ def format_duration(seconds: float) -> str:
     return f"{minutes}m {remaining_seconds:.0f}s"
 
 
+def detect_rtl_text(text: str) -> bool:
+    """
+    Detect if text contains right-to-left characters (Arabic, Hebrew, etc).
+
+    Args:
+        text: Text to analyze
+
+    Returns:
+        True if RTL text detected, False otherwise
+    """
+    # Unicode ranges for common RTL languages
+    rtl_ranges = [
+        (0x0590, 0x05FF),    # Hebrew
+        (0x0600, 0x06FF),    # Arabic
+        (0x0750, 0x077F),    # Arabic Supplement
+        (0x08A0, 0x08FF),    # Arabic Extended-A
+    ]
+
+    for char in text:
+        code = ord(char)
+        for start, end in rtl_ranges:
+            if start <= code <= end:
+                return True
+    return False
+
+
+def format_transcription_text(text: str) -> str:
+    """
+    Format transcription text, handling RTL languages properly.
+
+    Args:
+        text: Transcribed text
+
+    Returns:
+        Formatted text with RTL hints if needed
+    """
+    if not text.strip():
+        return text
+
+    if detect_rtl_text(text):
+        # Wrap RTL text with HTML direction marker for proper alignment
+        return f'<div dir="rtl">\n\n{text}\n\n</div>'
+
+    return text
+
+
 def generate_markdown(wav_path: str, transcription_text: str) -> str:
     """
     Generate markdown content with metadata and transcription.
@@ -181,6 +227,9 @@ def generate_markdown(wav_path: str, transcription_text: str) -> str:
     sample_rate = metadata['sample_rate']
     channels = metadata['channels']
 
+    # Format transcription text (handles RTL languages)
+    formatted_text = format_transcription_text(transcription_text)
+
     # Create markdown
     markdown = f"""# Recording: {filename}
 
@@ -195,7 +244,7 @@ def generate_markdown(wav_path: str, transcription_text: str) -> str:
 
 ## Transcription
 
-{transcription_text}
+{formatted_text}
 
 ---
 *Automatically transcribed using OpenAI Whisper*

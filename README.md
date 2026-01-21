@@ -136,7 +136,6 @@ omi-recorder/
 │   ├── transcribe.py              # Transcription module
 │   └── batch_transcribe.py        # Batch transcription script
 ├── config.example.yaml        # Example configuration file
-├── setup_complete.sh          # User installation script
 ├── docs/
 │   ├── ARCHITECTURE.md        # Technical documentation
 │   ├── INSTALL.md             # Installation guide

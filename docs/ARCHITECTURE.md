@@ -92,7 +92,7 @@ BLE Notification
 
 ### 4. Voice Activity Detection (Continuous Recorder)
 
-The `omi_continuous_recorder.py` implements simple voice activity detection:
+The `src/omi_continuous_recorder.py` implements simple voice activity detection:
 
 ```
 Audio Frame (PCM)
@@ -150,7 +150,7 @@ main()
         └── Save buffer to WAV file
 ```
 
-### omi_continuous_recorder.py
+### src/omi_continuous_recorder.py
 ```
 main()
   └── AutoRecorder.run()
@@ -185,7 +185,7 @@ All scripts use Python's `asyncio` for concurrent operations:
 - **BLE callbacks**: Executed in event loop context
 - **File I/O**: Synchronous (acceptable for WAV writes)
 
-The `omi_recorder_enhanced.py` additionally uses a background thread for keyboard input to allow non-blocking user interaction.
+The `src/omi_recorder_enhanced.py` additionally uses a background thread for keyboard input to allow non-blocking user interaction.
 
 ## Error Handling
 

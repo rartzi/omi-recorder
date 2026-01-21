@@ -9,21 +9,21 @@ This guide explains how to use the Omi Audio Recorder scripts.
 source venv/bin/activate
 
 # 2. Find your Omi device
-python discover_omi.py
+uv run src/discover_omi.py
 
 # 3. Update DEVICE_UUID in your chosen script
 
 # 4. Run a recorder
-python omi_continuous_recorder.py
+uv run src/omi_continuous_recorder.py
 ```
 
 ## Available Scripts
 
 | Script | Best For |
 |--------|----------|
-| `omi_continuous_recorder.py` | Recording multiple ideas/notes automatically |
-| `omi_recorder.py` | Simple one-shot recordings |
-| `omi_recorder_enhanced.py` | Manual control with keyboard shortcuts |
+| `src/omi_continuous_recorder.py` | Recording multiple ideas/notes automatically |
+| `src/omi_recorder.py` | Simple one-shot recordings |
+| `src/omi_recorder_enhanced.py` | Manual control with keyboard shortcuts |
 
 ---
 
@@ -43,7 +43,7 @@ python omi_continuous_recorder.py
 ### Usage
 
 ```bash
-python omi_continuous_recorder.py
+uv run src/omi_continuous_recorder.py
 ```
 
 ### Example Session
@@ -85,7 +85,7 @@ Quitting...
 
 ### Configuration
 
-Edit these values at the top of `omi_continuous_recorder.py`:
+Edit these values at the top of `src/omi_continuous_recorder.py`:
 
 ```python
 SILENCE_THRESHOLD = 500   # Lower = more sensitive to quiet speech
@@ -112,7 +112,7 @@ omi_recordings/
 ### Usage
 
 ```bash
-python omi_recorder.py
+uv run src/omi_recorder.py
 ```
 
 ### Workflow
@@ -172,7 +172,7 @@ Play it:
 ### Usage
 
 ```bash
-python omi_recorder_enhanced.py
+uv run src/omi_recorder_enhanced.py
 ```
 
 ### Controls
@@ -231,7 +231,7 @@ Play recordings:
 ### Usage
 
 ```bash
-python discover_omi.py
+uv run src/discover_omi.py
 ```
 
 ### Example Output
@@ -258,7 +258,7 @@ Next Steps
 ======================================================================
 
 1. Copy the UUID above
-2. Edit omi_recorder.py
+2. Edit src/omi_recorder.py
 3. Set DEVICE_UUID = "YOUR-UUID-HERE"
 ```
 
@@ -330,7 +330,7 @@ print(transcript.text)
 1. Ensure Omi is powered on
 2. Check Bluetooth is enabled on Mac
 3. Move Omi closer to your Mac
-4. Run `discover_omi.py` to verify UUID
+4. Run `src/discover_omi.py` to verify UUID
 
 ### "No audio captured"
 
@@ -346,14 +346,14 @@ brew install opus
 
 ### Recordings are splitting too often
 
-Increase `SILENCE_DURATION` in `omi_continuous_recorder.py`:
+Increase `SILENCE_DURATION` in `src/omi_continuous_recorder.py`:
 ```python
 SILENCE_DURATION = 5.0  # Wait 5 seconds instead of 3
 ```
 
 ### Recordings not triggering on quiet speech
 
-Lower `SILENCE_THRESHOLD` in `omi_continuous_recorder.py`:
+Lower `SILENCE_THRESHOLD` in `src/omi_continuous_recorder.py`:
 ```python
 SILENCE_THRESHOLD = 300  # More sensitive to quiet audio
 ```

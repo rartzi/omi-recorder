@@ -25,10 +25,10 @@ python3 -m venv venv && source venv/bin/activate
 pip install bleak
 
 # Find your device
-python discover_omi.py
+uv run src/discover_omi.py
 
 # Update DEVICE_UUID in your chosen script, then run:
-python omi_continuous_recorder.py
+uv run src/omi_continuous_recorder.py
 ```
 
 ## Installation
@@ -60,7 +60,7 @@ source venv/bin/activate
 pip install bleak
 
 # Discover your Omi device UUID
-python discover_omi.py
+uv run src/discover_omi.py
 ```
 
 ## Usage
@@ -70,7 +70,7 @@ python discover_omi.py
 Automatically records and saves separate files based on voice activity:
 
 ```bash
-python omi_continuous_recorder.py
+uv run src/omi_continuous_recorder.py
 ```
 
 - Starts recording when speech is detected
@@ -83,7 +83,7 @@ python omi_continuous_recorder.py
 Simple recording that saves when you press `Ctrl+C`:
 
 ```bash
-python omi_recorder.py
+uv run src/omi_recorder.py
 ```
 
 ### Enhanced Recorder
@@ -91,7 +91,7 @@ python omi_recorder.py
 Manual control with keyboard shortcuts:
 
 ```bash
-python omi_recorder_enhanced.py
+uv run src/omi_recorder_enhanced.py
 ```
 
 | Key | Action |
@@ -114,22 +114,24 @@ See [docs/USAGE.md](docs/USAGE.md) for comprehensive usage guide.
 ## Project Structure
 
 ```
-omi-clean/
-├── discover_omi.py            # Device discovery utility
-├── omi_recorder.py            # Basic recorder
-├── omi_recorder_enhanced.py   # Interactive recorder
-├── omi_continuous_recorder.py # Voice-activated recorder
+omi-recorder/
+├── src/
+│   ├── discover_omi.py            # Device discovery utility
+│   ├── omi_recorder.py            # Basic recorder
+│   ├── omi_recorder_enhanced.py   # Interactive recorder
+│   └── omi_continuous_recorder.py # Voice-activated recorder
 ├── setup_complete.sh          # User installation script
 ├── docs/
 │   ├── ARCHITECTURE.md        # Technical documentation
 │   ├── INSTALL.md             # Installation guide
 │   └── USAGE.md               # Usage guide
+├── assets/                    # Documentation assets
 └── omi_recordings/            # Output directory (created on first run)
 ```
 
 ## Configuration
 
-Edit these values in `omi_continuous_recorder.py` to customize behavior:
+Edit these values in `src/omi_continuous_recorder.py` to customize behavior:
 
 ```python
 DEVICE_UUID = "YOUR-UUID-HERE"  # Your Omi's Bluetooth UUID
@@ -166,7 +168,7 @@ whisper omi_recordings/*.wav
 
 1. Ensure Omi is powered on
 2. Check Bluetooth is enabled on Mac
-3. Run `discover_omi.py` to verify UUID
+3. Run `src/discover_omi.py` to verify UUID
 
 ### Opus library not found
 

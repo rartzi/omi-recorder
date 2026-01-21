@@ -34,7 +34,7 @@ async def discover():
         print("=" * 70)
         print()
         print("1. Copy the UUID above")
-        print("2. Edit omi_recorder.py")
+        print("2. Edit src/omi_recorder.py")
         print("3. Set DEVICE_UUID = \"YOUR-UUID-HERE\"")
         print()
     else:

@@ -26,14 +26,14 @@ pip install bleak
 source venv/bin/activate
 
 # 1. Discover Omi device UUID
-python discover_omi.py
+uv run src/discover_omi.py
 
 # 2. Edit DEVICE_UUID in the script you want to use (line 7 or 13)
 
 # 3. Recording options:
-python omi_recorder.py              # Basic: Ctrl+C to stop
-python omi_recorder_enhanced.py     # Interactive: r/s/q controls
-python omi_continuous_recorder.py   # Voice-activated: auto-saves on silence
+uv run src/omi_recorder.py              # Basic: Ctrl+C to stop
+uv run src/omi_recorder_enhanced.py     # Interactive: r/s/q controls
+uv run src/omi_continuous_recorder.py   # Voice-activated: auto-saves on silence
 ```
 
 Note: `setup_complete.sh` only copies `discover_omi.py` and `omi_recorder.py` to `~/omi-recorder/`. Other scripts must be run from the repository.

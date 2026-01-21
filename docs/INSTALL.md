@@ -39,7 +39,7 @@ source venv/bin/activate
 pip install bleak
 
 # 6. Find your Omi device UUID
-python discover_omi.py
+uv run src/discover_omi.py
 
 # 7. Update DEVICE_UUID in your chosen script
 # Edit line 7 or 13 in the script you want to use
@@ -122,7 +122,7 @@ This installs:
 1. Power on your Omi device
 2. Run discovery:
    ```bash
-   python discover_omi.py
+   uv run src/discover_omi.py
    ```
 3. Copy the UUID shown (e.g., `93826AE8-AE8C-2AE4-D717-0978E4817739`)
 4. Edit your chosen recorder script and update `DEVICE_UUID`
@@ -132,15 +132,17 @@ This installs:
 ## Project Structure
 
 ```
-omi-clean/
-├── discover_omi.py           # Device discovery
-├── omi_recorder.py           # Basic recorder
-├── omi_recorder_enhanced.py  # Interactive recorder
-├── omi_continuous_recorder.py # Voice-activated recorder
+omi-recorder/
+├── src/                      # Source scripts
+│   ├── discover_omi.py           # Device discovery
+│   ├── omi_recorder.py           # Basic recorder
+│   ├── omi_recorder_enhanced.py  # Interactive recorder
+│   └── omi_continuous_recorder.py # Voice-activated recorder
 ├── setup_complete.sh         # User installation script
 ├── CLAUDE.md                 # AI assistant instructions
 ├── README.md                 # Project overview
 ├── .gitignore                # Git ignore rules
+├── assets/                   # Documentation assets
 ├── docs/                     # Documentation
 │   ├── ARCHITECTURE.md
 │   ├── USAGE.md
@@ -180,14 +182,14 @@ python3 -c "from bleak import BleakScanner; print('Bleak OK')"
 
 ```bash
 source venv/bin/activate
-python discover_omi.py
+uv run src/discover_omi.py
 ```
 
 ### Test 4: Test Recording
 
 ```bash
 source venv/bin/activate
-python omi_continuous_recorder.py
+uv run src/omi_continuous_recorder.py
 # Speak into Omi, wait for recording, press Ctrl+C
 ```
 
@@ -275,7 +277,7 @@ python -m build
 pip install pyinstaller
 
 # Create standalone executable
-pyinstaller --onefile omi_continuous_recorder.py
+pyinstaller --onefile src/omi_continuous_recorder.py
 ```
 
 Note: Standalone builds require bundling libopus, which adds complexity.

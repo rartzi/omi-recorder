@@ -22,12 +22,12 @@ echo ""
 # ============================================================================
 echo "Copying omi_recorder.py..."
 
-if [ ! -f "$SCRIPT_DIR/omi_recorder.py" ]; then
-    echo "✗ Error: omi_recorder.py not found in $SCRIPT_DIR"
+if [ ! -f "$SCRIPT_DIR/src/omi_recorder.py" ]; then
+    echo "✗ Error: omi_recorder.py not found in $SCRIPT_DIR/src"
     exit 1
 fi
 
-cp "$SCRIPT_DIR/omi_recorder.py" "$INSTALL_DIR/omi_recorder.py"
+cp "$SCRIPT_DIR/src/omi_recorder.py" "$INSTALL_DIR/omi_recorder.py"
 chmod +x "$INSTALL_DIR/omi_recorder.py"
 echo "✓ Copied omi_recorder.py"
 
@@ -36,12 +36,12 @@ echo "✓ Copied omi_recorder.py"
 # ============================================================================
 echo "Copying discover_omi.py..."
 
-if [ ! -f "$SCRIPT_DIR/discover_omi.py" ]; then
-    echo "✗ Error: discover_omi.py not found in $SCRIPT_DIR"
+if [ ! -f "$SCRIPT_DIR/src/discover_omi.py" ]; then
+    echo "✗ Error: discover_omi.py not found in $SCRIPT_DIR/src"
     exit 1
 fi
 
-cp "$SCRIPT_DIR/discover_omi.py" "$INSTALL_DIR/discover_omi.py"
+cp "$SCRIPT_DIR/src/discover_omi.py" "$INSTALL_DIR/discover_omi.py"
 chmod +x "$INSTALL_DIR/discover_omi.py"
 echo "✓ Copied discover_omi.py"
 

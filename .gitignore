@@ -2,5 +2,6 @@ __pycache__/
 *.pyc
 *.pyo
 venv/
+.venv/
 .claude/
 omi_recordings/

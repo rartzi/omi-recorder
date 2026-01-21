@@ -14,19 +14,11 @@ uv run src/omi_continuous_recorder.py
 # That's it! No configuration needed.
 ```
 
-**Note:** All recorders now support auto-discovery. No need to manually find or edit device UUIDs.
-
-## Available Scripts
-
-| Script | Best For |
-|--------|----------|
-| `src/omi_continuous_recorder.py` | Recording multiple ideas/notes automatically |
-| `src/omi_recorder.py` | Simple one-shot recordings |
-| `src/omi_recorder_enhanced.py` | Manual control with keyboard shortcuts |
+**Note:** The recorder supports auto-discovery. No need to manually find or edit device UUIDs.
 
 ---
 
-## Continuous Recorder (Recommended)
+## Recording
 
 **Purpose:** Automatically records and saves separate audio files based on voice activity. Perfect for capturing multiple ideas or notes in one session.
 
@@ -113,125 +105,6 @@ omi_recordings/
 ├── omi_auto_20260120_143022.wav
 ├── omi_auto_20260120_143035.wav
 └── omi_auto_20260120_143048.wav
-```
-
----
-
-## Basic Recorder
-
-**Purpose:** Simple recording that saves when you press Ctrl+C.
-
-### Usage
-
-```bash
-uv run src/omi_recorder.py
-```
-
-### Workflow
-
-1. Start the script
-2. Press Enter when prompted
-3. Speak into your Omi
-4. Press Ctrl+C to stop and save
-
-### Example
-
-```
-======================================================================
-Omi Audio Recorder
-======================================================================
-
-Ready to record
-  Output: omi_recordings/omi_20260120_143500.wav
-
-Instructions:
-  1. Start recording on your Omi device
-  2. Press Enter to begin capture
-  3. Speak into your Omi
-  4. Press Ctrl+C when done
-
-Press Enter to start...
-
-Connecting to Omi...
-Connected
-
-Recording... (Press Ctrl+C to stop)
-
-^C
-
-Stopped
-
-Saving audio...
-
-======================================================================
-Recording saved successfully!
-======================================================================
-
-  File: omi_recordings/omi_20260120_143500.wav
-  Duration: 12.5 seconds
-  Size: 390.2 KB
-
-Play it:
-  open omi_recordings/omi_20260120_143500.wav
-```
-
----
-
-## Enhanced Recorder
-
-**Purpose:** Manual control with keyboard shortcuts for multiple recordings in one session.
-
-### Usage
-
-```bash
-uv run src/omi_recorder_enhanced.py
-```
-
-### Controls
-
-| Key | Action |
-|-----|--------|
-| `r` | Start recording |
-| `s` | Stop recording and save |
-| `q` | Quit the application |
-
-### Example
-
-```
-======================================================================
-Omi Audio Recorder Enhanced
-======================================================================
-
-Connecting to Omi...
-Connected
-
-Commands: [r]ecord | [s]top | [q]uit
-> r
-Recording... (0.0s)
-Recording... (5.2s)
-> s
-Saved: omi_20260120_143600_001.wav (5.2s, 162.5KB)
-
-Commands: [r]ecord | [s]top | [q]uit
-> r
-Recording... (0.0s)
-Recording... (3.8s)
-> s
-Saved: omi_20260120_143600_002.wav (3.8s, 118.6KB)
-
-Commands: [r]ecord | [s]top | [q]uit
-> q
-
-======================================================================
-Session Ended
-======================================================================
-
-Saved 2 recording(s):
-  • omi_20260120_143600_001.wav (5.2s, 162.5KB)
-  • omi_20260120_143600_002.wav (3.8s, 118.6KB)
-
-Play recordings:
-  open omi_recordings
 ```
 
 ---

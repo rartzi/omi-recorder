@@ -69,7 +69,7 @@ uv run src/discover_omi.py
 
 ## Usage
 
-### Continuous Recorder (Recommended)
+### Recording
 
 Automatically discovers your Omi device and records with voice activity detection:
 
@@ -90,28 +90,6 @@ uv run src/omi_continuous_recorder.py B6B3A95D-FAC4-E984-0E50-8924A6F36529
 - Real-time progress bar showing recording status
 - Press `Ctrl+C` to stop gracefully
 
-### Basic Recorder
-
-Simple recording that saves when you press `Ctrl+C`:
-
-```bash
-uv run src/omi_recorder.py
-```
-
-### Enhanced Recorder
-
-Manual control with keyboard shortcuts:
-
-```bash
-uv run src/omi_recorder_enhanced.py
-```
-
-| Key | Action |
-|-----|--------|
-| `r` | Start recording |
-| `s` | Stop and save |
-| `q` | Quit |
-
 See [docs/USAGE.md](docs/USAGE.md) for comprehensive usage guide.
 
 ## Documentation
@@ -130,8 +108,6 @@ omi-recorder/
 ├── src/
 │   ├── config.py                  # Configuration loader
 │   ├── discover_omi.py            # Device discovery utility
-│   ├── omi_recorder.py            # Basic recorder
-│   ├── omi_recorder_enhanced.py   # Interactive recorder
 │   ├── omi_continuous_recorder.py # Voice-activated recorder
 │   ├── transcribe.py              # Transcription module
 │   └── batch_transcribe.py        # Batch transcription script

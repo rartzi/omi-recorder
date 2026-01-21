@@ -1,204 +1,231 @@
 # Omi Audio Recorder
 
-Record audio from your Omi wearable device to WAV files on your Mac via Bluetooth.
+A macOS application for recording audio from Omi wearable devices via Bluetooth Low Energy (BLE). Captures Opus-encoded audio streams in real-time and saves them as WAV files.
 
----
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)](https://www.apple.com/macos/)
 
-## ⚡ Quick Start (3 Steps)
+## Features
 
-### 1. Run Setup
+- **Real-time audio capture** from Omi wearable devices
+- **Voice-activated recording** with automatic session segmentation
+- **Multiple recording modes** (continuous, manual, interactive)
+- **Opus to WAV conversion** with high-quality decoding
+- **Simple setup** with minimal dependencies
+
+## Quick Start
 
 ```bash
-# Make the setup script executable and run it
-chmod +x setup_complete.sh
-./setup_complete.sh
+# Install dependencies
+brew install opus
+python3 -m venv venv && source venv/bin/activate
+pip install bleak
+
+# Find your device
+python discover_omi.py
+
+# Update DEVICE_UUID in your chosen script, then run:
+python omi_continuous_recorder.py
 ```
 
-**What this does:**
-- Creates all necessary files in `~/omi-recorder/`
-- Installs Opus audio codec
-- Creates Python virtual environment
-- Installs dependencies (bleak)
+## Installation
 
-### 2. Find Your Device UUID
+See [docs/INSTALL.md](docs/INSTALL.md) for detailed installation instructions.
+
+### Requirements
+
+- macOS 11+ (Big Sur or later)
+- Python 3.8+
+- Homebrew
+- Omi wearable device
+
+### Quick Setup
 
 ```bash
-cd ~/omi-recorder
+# Clone repository
+git clone <repository-url>
+cd omi-clean
+
+# Install Opus codec
+brew install opus
+
+# Create and activate virtual environment
+python3 -m venv venv
 source venv/bin/activate
+
+# Install Python dependencies
+pip install bleak
+
+# Discover your Omi device UUID
 python discover_omi.py
 ```
 
-**Copy the UUID** that's displayed (format: `XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX`)
+## Usage
 
-### 3. Update & Record
+### Continuous Recorder (Recommended)
+
+Automatically records and saves separate files based on voice activity:
 
 ```bash
-# Edit omi_recorder.py and set your UUID on line 10
-nano omi_recorder.py
-# Change: DEVICE_UUID = "YOUR-UUID-HERE"
-# Save: Ctrl+X, then Y, then Enter
+python omi_continuous_recorder.py
+```
 
-# Start recording!
+- Starts recording when speech is detected
+- Saves to a new file after 3 seconds of silence
+- Creates separate files for each speech segment
+- Press `Ctrl+C` to stop
+
+### Basic Recorder
+
+Simple recording that saves when you press `Ctrl+C`:
+
+```bash
 python omi_recorder.py
 ```
 
-**Recording steps:**
-1. Press button on Omi to start recording
-2. Press Enter when prompted
-3. Speak into your Omi device
-4. Press Ctrl+C when done
-5. Audio saved to `omi_recordings/omi_YYYYMMDD_HHMMSS.wav`
+### Enhanced Recorder
 
----
-
-## 📂 What Gets Installed
-
-After running `setup_complete.sh`, you'll have:
-
-```
-~/omi-recorder/
-├── venv/                    # Python virtual environment
-├── omi_recordings/          # Your recordings go here
-├── omi_recorder.py         # Main recorder script
-└── discover_omi.py         # Device UUID finder
-```
-
----
-
-## 🎯 Daily Usage
-
-Once set up, recording is simple:
+Manual control with keyboard shortcuts:
 
 ```bash
-# 1. Navigate and activate
-cd ~/omi-recorder
-source venv/bin/activate
-
-# 2. Record (make sure Omi is recording first!)
-python omi_recorder.py
-
-# 3. Play your recording
-open omi_recordings/omi_*.wav
+python omi_recorder_enhanced.py
 ```
 
----
+| Key | Action |
+|-----|--------|
+| `r` | Start recording |
+| `s` | Stop and save |
+| `q` | Quit |
 
-## 🔧 Troubleshooting
+See [docs/USAGE.md](docs/USAGE.md) for comprehensive usage guide.
 
-### "No module named 'bleak'"
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [INSTALL.md](docs/INSTALL.md) | Installation and setup guide |
+| [USAGE.md](docs/USAGE.md) | Usage guide with examples |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical architecture |
+| [CLAUDE.md](CLAUDE.md) | AI assistant instructions |
+
+## Project Structure
+
+```
+omi-clean/
+├── discover_omi.py            # Device discovery utility
+├── omi_recorder.py            # Basic recorder
+├── omi_recorder_enhanced.py   # Interactive recorder
+├── omi_continuous_recorder.py # Voice-activated recorder
+├── setup_complete.sh          # User installation script
+├── docs/
+│   ├── ARCHITECTURE.md        # Technical documentation
+│   ├── INSTALL.md             # Installation guide
+│   └── USAGE.md               # Usage guide
+└── omi_recordings/            # Output directory (created on first run)
+```
+
+## Configuration
+
+Edit these values in `omi_continuous_recorder.py` to customize behavior:
+
+```python
+DEVICE_UUID = "YOUR-UUID-HERE"  # Your Omi's Bluetooth UUID
+SILENCE_THRESHOLD = 500         # Voice detection sensitivity
+SILENCE_DURATION = 3.0          # Seconds of silence before saving
+MIN_RECORDING_DURATION = 1.0    # Minimum recording length to save
+```
+
+## Technical Specifications
+
+| Specification | Value |
+|---------------|-------|
+| Audio Codec | Opus |
+| Sample Rate | 16 kHz |
+| Channels | Mono |
+| Output Format | WAV (PCM 16-bit) |
+| Protocol | Bluetooth Low Energy (BLE) |
+
+## Transcription
+
+Recorded files can be transcribed using OpenAI Whisper:
 
 ```bash
-cd ~/omi-recorder
-source venv/bin/activate
-pip install bleak --break-system-packages
+# Install Whisper
+pip install openai-whisper
+
+# Transcribe recordings
+whisper omi_recordings/*.wav
 ```
 
-### "Opus library not found"
+## Troubleshooting
+
+### Device not found
+
+1. Ensure Omi is powered on
+2. Check Bluetooth is enabled on Mac
+3. Run `discover_omi.py` to verify UUID
+
+### Opus library not found
 
 ```bash
 brew install opus
 ```
 
-### "No audio captured"
+### No audio captured
 
-**Check that:**
-- ✅ Omi device is actively recording (button pressed, not just powered on)
-- ✅ Device is within 10 meters
-- ✅ You're speaking INTO the device (not just near it)
-- ✅ Correct UUID is set in `omi_recorder.py`
+- Speak directly into the Omi device
+- Check device battery level
+- Verify correct UUID in script
 
-### "Connection timeout"
+See [docs/USAGE.md](docs/USAGE.md#troubleshooting) for more solutions.
 
-```bash
-# Turn Bluetooth off and on
-# System Settings → Bluetooth → Toggle off/on
+## Contributing
 
-# Restart your Omi device
-# Then try again
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+```
+MIT License
+
+Copyright (c) 2025 Omi Audio Recorder Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
 
----
+## Acknowledgments
 
-## 📊 Technical Details
+- [Based Hardware](https://github.com/BasedHardware/omi) - Omi device and SDK
+- [Bleak](https://github.com/hbldh/bleak) - Bluetooth Low Energy library
+- [Opus Codec](https://opus-codec.org/) - Audio codec
 
-- **Codec:** Opus (codec 21)
-- **Sample Rate:** 16kHz
-- **Channels:** Mono
-- **Output:** WAV (PCM 16-bit)
-- **Protocol:** BLE (Bluetooth Low Energy)
+## Resources
 
----
-
-## 💡 Tips
-
-### Create an Alias
-
-Add to your `~/.zshrc` or `~/.bashrc`:
-
-```bash
-alias omi-record='cd ~/omi-recorder && source venv/bin/activate && python omi_recorder.py'
-```
-
-Then just type: `omi-record`
-
-### Transcribe Recordings
-
-Use Whisper for speech-to-text:
-
-```bash
-pip install openai-whisper
-whisper omi_recordings/omi_20251025_123456.wav
-```
-
----
-
-## 📋 Requirements
-
-- macOS (tested on Apple Silicon)
-- Python 3.8+
-- Homebrew
-- Omi device (firmware 1.0.3+)
-
----
-
-## 🆘 Support
-
-- **Omi Docs:** https://docs.omi.me/
-- **Omi GitHub:** https://github.com/BasedHardware/omi
-- **Protocol Docs:** https://docs.omi.me/doc/developer/Protocol
-
----
-
-## 📝 How It Works
-
-1. **Connects** to Omi via Bluetooth (BLE)
-2. **Receives** Opus-encoded audio packets
-3. **Decodes** using libopus in real-time
-4. **Saves** as standard WAV file
-
-**Audio Characteristic:** `19B10001-E8F2-537E-4F6C-D104768A1214`
-
----
-
-## ✅ Verification
-
-After setup, test that everything works:
-
-```bash
-cd ~/omi-recorder
-source venv/bin/activate
-
-# Should show your device
-python discover_omi.py
-
-# Should record audio
-python omi_recorder.py
-```
-
----
-
-**Questions?** All functionality is in 2 simple Python scripts - easy to read and modify!
-
----
-
-Made with ❤️ for Omi users | October 2025
+- [Omi Documentation](https://docs.omi.me/)
+- [Omi GitHub](https://github.com/BasedHardware/omi)
+- [Omi Protocol Docs](https://docs.omi.me/doc/developer/Protocol)

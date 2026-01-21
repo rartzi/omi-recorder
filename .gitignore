@@ -51,6 +51,13 @@ omi_recordings/
 .claude/
 config.yaml
 
+# Test directories and files
+test_recordings/
+test_transcripts/
+test_logs/
+omi_logs/
+test_report.txt
+
 # Environment & secrets
 .env
 .env.local
